@@ -2,48 +2,58 @@ require 'student_directory'
 
 describe "student_directory" do
 
-	# it "Proves that students is an array" do
-		# expect(students.class).to eq Array
-	# end	
-	# context 'Prints Massages' do
-			# it "Prints header" do	
-				# expect(self).to receive(:puts).with("The students of Makers Academy\n----------------------\n")
-				# print_header
-			# end
+	context 'Saving students to a file' do 
 
-			# it "Prints students_list" do
-				# expect(self).to receive(:puts).with(@students)
-				# students_list
-			# end
+		it 'Formats the content of studnets list to comma-separated format' do
 
-			# it "Prints Footer with a students count" do
-				# number_of_students = students.length
-				# expect(self).to receive(:puts).with("Overall we have #{number_of_students} great students!")
-				# print_footer
-			# end
-	# end
-	
-
-	context 'adding students to the list' do
-		it 'we have no students in the begining' do
-			expect(students_list.empty?).to be true
+			@student = {name: 'Charlie', cohort: 'June'}
+			expect(students_to_csv(@student)).to eq ['Charlie', 'June']
+        	
 		end
 
-		it "a student can be created" do
-			name   = "Charlie"
-			cohort = "June"
-			expect(create_student_with(name, cohort)).to eq ({name: "Charlie", cohort: :June})
-		end
-
-		it 'there is one student in the list after adding one' do
-			charlie = create_student_with("Charlie", "June")
-			add_student(charlie)
-			expect(students_list).to eq [{name: "Charlie", cohort: :June}]
+		it 'Save student to a file' do
+			@student = {name: 'Charlie', cohort: 'June'}
+			students = [@student]
+			csv = double :csv
+			expect(csv).to receive(:<<).with(students_to_csv(@student))
+			expect(CSV).to receive(:open).with('./students.csv', 'wb').and_yield(csv)
+			save(students)
 		end
 	end
 
-	context 'saving students to a file' do 
+	context 'Loading student list' do
+
+		it 'converting csv back to HASH and loading it into student list' do
+			row = ['Charlie', 'June']
+			expect(CSV).to receive(:foreach).with('./students.csv', 'wb').and_yield(row)
+			expect(@students).to receive(:<<).with(row)
+			load_students
+
+		end
+
+	end
+
+	context 'User input' do 
 		
-	    end
+		it 'receives input from the user (name)' do
+			name = "Charlie"
+			expect(self).to receive(:gets).and_return(name)
+			user_input
+		end
+
+		it 'does not include \n' do
+			name = "Charlie\n"
+			name_out = "Charlie"
+			expect(self).to receive(:gets).and_return(name)
+			expect(user_input).to eq "Charlie"
+		end
+
+		it 'include user input in the students list' do
+			students << "Dave"
+			student = "Dave"
+			expect(@students).to eq([student])
+		end
+	end
+
 
 end

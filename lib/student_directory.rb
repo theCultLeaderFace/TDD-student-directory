@@ -1,25 +1,25 @@
-# def students
-	# students = []
-# end
+require 'CSV'
 
-def print_header
-	puts "The students of Makers Academy\n----------------------\n"
+def students
+	@students = []
 end
 
-def students_list
-	@students ||= []
-	
+def students_to_csv(student)
+	student.values
 end
 
-def print_footer
-    number_of_students = students_list.length
-	puts "Overall we have #{number_of_students} great students!"
+def save(students)
+	CSV.open('./students.csv', 'wb') do |csv|
+	csv << students_to_csv(@student)
+end
 end
 
-def create_student_with(name, cohort)
-	{name: name, cohort: cohort.to_sym}
+def load_students
+	CSV.foreach('./students.csv', 'wb') do |row|
+		@students << row
+	end
 end
 
-def add_student(student)
-	students_list << student
+def user_input
+	gets.chomp				
 end
